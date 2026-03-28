@@ -18,3 +18,11 @@ Backend for the Spotlit NN1.dev toolkit.
 pnpm install
 pnpm dev
 ```
+
+## Notes
+### Filters used on final interview audio
+- highpass - cuts low-end noise and desk rumble
+- afftdn - reduces background noise
+- acompressor - evens out volume differences between segments
+- acrossfade - slightly smooths transitions between segments
+- loudnorm - normalises loudness to the quiter broadcast standard
