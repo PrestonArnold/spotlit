@@ -6,6 +6,10 @@ export const mergeAudio = (files: string[], output: string) => {
         
         const filter = `concat=n=${files.length}:v=0:a=1[out]`;
         const args: string[] = [];
+
+        // Be lenient about malformed packets (common with Chrome WebM/Opus recordings)
+        args.push("-err_detect", "ignore_err");
+
         files.forEach(f => args.push("-i", f));
         args.push("-filter_complex", filter, "-map", "[out]", output);
 
