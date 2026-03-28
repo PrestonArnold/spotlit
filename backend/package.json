@@ -1,0 +1,22 @@
+{
+  "name": "spotlit-api",
+  "version": "0.0.1",
+  "description": "API for NN1.dev spotlight toolkit",
+  "license": "MIT",
+  "author": "Preston Arnold",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.2"
+  }
+}
