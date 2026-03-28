@@ -14,7 +14,7 @@ export const submitAnswer = (req: Request, res: Response) => {
 }
 
 export const generateInterview = async (req: Request, res: Response) => {
-    const { segments } = req.body; // ["q1", "q2", ...]
+    const { segments } = req.body; // ["q1", "a1", "q2", "a2", ...]
 
     const files = segments.map((id: string) =>
         existsSync(join(__dirname, "../user-recordings", `${id}.mp3`))
