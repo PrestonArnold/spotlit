@@ -1,13 +1,21 @@
 import { Request, Response } from "express";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, mkdirSync } from "fs";
 import { basename, join } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import { mergeAudio } from "../services/ffmpegService.js";
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export const submitAnswer = (req: Request, res: Response) => {
     const { questionId, audioBase64 } = req.body;
 
+    const recordingsDir = join(__dirname, "../user-recordings");
+    mkdirSync(recordingsDir, { recursive: true });
+
     const audioBuffer = Buffer.from(audioBase64, "base64");
-    const filePath = join(__dirname, "../user-recordings", `${questionId}.mp3`);
+    const filePath = join(recordingsDir, `${questionId}.mp3`);
     
     writeFileSync(filePath, audioBuffer);
 
@@ -25,7 +33,10 @@ export const generateInterview = async (req: Request, res: Response) => {
 
     console.log(files)
 
-    const outputPath = join(__dirname, "../interviews", `final-${Date.now()}.mp3`);
+    const interviewsDir = join(__dirname, "../interviews");
+    mkdirSync(interviewsDir, { recursive: true });
+
+    const outputPath = join(interviewsDir, `final-${Date.now()}.mp3`);
 
     await mergeAudio(files, outputPath);
     
