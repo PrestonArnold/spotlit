@@ -17,8 +17,8 @@ export const submitAnswer = (req: Request, res: Response): void => {
     }
 
     const ext = mimeType?.includes('mp4') ? 'mp4'
-              : mimeType?.includes('ogg') ? 'ogg'
-              : 'webm';
+            : mimeType?.includes('ogg') ? 'ogg'
+            : 'webm';
 
     try {
         const recordingsDir = join(__dirname, "../user-recordings");
