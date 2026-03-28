@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { existsSync, writeFileSync } from "fs";
-import { join } from "path";
+import { basename, join } from "path";
 import { mergeAudio } from "../services/ffmpegService.js";
 
 export const submitAnswer = (req: Request, res: Response) => {
@@ -26,8 +26,8 @@ export const generateInterview = async (req: Request, res: Response) => {
     console.log(files)
 
     const outputPath = join(__dirname, "../interviews", `final-${Date.now()}.mp3`);
-    
+
     await mergeAudio(files, outputPath);
     
-    res.json({ status: "ok", url: outputPath });
+    res.json({ status: "ok", url: `/interviews/${basename(outputPath)}` });
 }
