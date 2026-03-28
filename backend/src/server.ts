@@ -19,5 +19,4 @@ app.use((req, res, next) => {
 });
 
 app.use("/questions", express.static(join(__dirname, "questions")));
-app.use("/user-recordings", express.static(join(__dirname, "user-recordings")));
 app.use("/interviews", express.static(join(__dirname, "interviews")));
