@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { existsSync, writeFileSync, mkdirSync } from "fs";
+import { existsSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "fs";
 import { basename, join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -57,6 +57,13 @@ export const generateInterview = async (req: Request, res: Response): Promise<vo
 
         console.log(files);
         await mergeAudio(files, outputPath);
+
+        // Clean up user recordings after successful merge
+        const recordingsDir = join(__dirname, "../user-recordings");
+        for (const file of readdirSync(recordingsDir)) {
+            unlinkSync(join(recordingsDir, file));
+        }
+        console.log("Cleaned up user-recordings");
 
         res.json({ status: "ok", url: `/interviews/${basename(outputPath)}` });
     } catch (err) {
