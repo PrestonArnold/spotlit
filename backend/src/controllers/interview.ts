@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { writeFileSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
 
 export const submitAnswer = (req: Request, res: Response) => {
@@ -14,5 +14,18 @@ export const submitAnswer = (req: Request, res: Response) => {
 }
 
 export const generateInterview = async (req: Request, res: Response) => {
-    // TODO
+    const { segments } = req.body; // ["q1", "q2", ...]
+
+    const files = segments.map((id: string) =>
+        existsSync(join(__dirname, "../user-recordings", `${id}.mp3`))
+            ? join(__dirname, "../user-recordings", `${id}.mp3`)
+            : join(__dirname, "../questions", `${id}.mp3`)
+    )
+
+    console.log(files)
+
+    const outputPath = join(__dirname, "../interviews", `final-${Date.now()}.mp3`);
+    
+    // merge & effects with ffmpeg
+    res.json({ status: "ok", url: outputPath });
 }
