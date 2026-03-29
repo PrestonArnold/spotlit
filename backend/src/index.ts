@@ -1,8 +1,8 @@
 import { app } from './server.js';
 import interviewRouter from './routes/interview.js';
-import { cleanupAllSessions } from './controllers/interview.js';
+import { initRecordingsDir } from './controllers/interview.js';
 
-cleanupAllSessions()
+initRecordingsDir()
 
 app.use('/interview', interviewRouter)
 
