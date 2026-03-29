@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator - Spotlit</title>
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/creator.css">
+</head>
+<body>
+
+<header>
+    <h1>Spotlit</h1>
+    <p>Write your spotlight post.</p>
+    <div class="header-actions">
+        <a href="index.html">Home</a>
+    </div>
+</header>
+
+<main>
+    <section class="meta-card">
+        <div class="field-grid">
+            <div class="field">
+                <label>Full name</label>
+                <input id="name" type="text" placeholder="Paweł Grzybek">
+            </div>
+            <div class="field">
+                <label>Role</label>
+                <input id="role" type="text" placeholder="Software Engineer">
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <input id="date" type="date">
+            </div>
+            <div class="field">
+                <label>Website <span class="optional">optional</span></label>
+                <input id="urlWebsite" type="url" placeholder="https://…">
+            </div>
+            <div class="field">
+                <label>GitHub <span class="optional">optional</span></label>
+                <input id="urlGitHub" type="url" placeholder="https://github.com/…">
+            </div>
+            <div class="field">
+                <label>LinkedIn <span class="optional">optional</span></label>
+                <input id="urlLinkedIn" type="url" placeholder="https://linkedin.com/in/…">
+            </div>
+            <div class="field">
+                <label>Bluesky <span class="optional">optional</span></label>
+                <input id="urlBluesky" type="url" placeholder="https://bsky.app/…">
+            </div>
+            <div class="field">
+                <label>Mastodon <span class="optional">optional</span></label>
+                <input id="urlMastodon" type="url" placeholder="https://…">
+            </div>
+            <div class="field">
+                <label>Twitter / X <span class="optional">optional</span></label>
+                <input id="urlTwitter" type="url" placeholder="https://x.com/…">
+            </div>
+            <div class="field">
+                <label>Instagram <span class="optional">optional</span></label>
+                <input id="urlInstagram" type="url" placeholder="https://instagram.com/…">
+            </div>
+            <div class="field">
+                <label>YouTube <span class="optional">optional</span></label>
+                <input id="urlYouTube" type="url" placeholder="https://youtube.com/…">
+            </div>
+            <div class="field">
+                <label>Hugging Face <span class="optional">optional</span></label>
+                <input id="urlHuggingFace" type="url" placeholder="https://huggingface.co/…">
+            </div>
+            <div class="field">
+                <label>NuGet <span class="optional">optional</span></label>
+                <input id="urlNuGet" type="url" placeholder="https://nuget.org/…">
+            </div>
+        </div>
+    </section>
+
+    <section class="questions"></section>
+
+    <div class="actions">
+        <button id="download">Download .md</button>
+    </div>
+</main>
+
+<div class="modal-backdrop" id="modal">
+    <div class="modal">
+        <p class="modal-title">Download complete</p>
+        <p class="modal-body">Would you like to record your interview?</p>
+        <div class="modal-actions">
+            <button id="modal-dismiss">Not now</button>
+            <a href="interview.html" class="btn-primary">Record interview →</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/creator.js"></script>
+</body>
+</html>

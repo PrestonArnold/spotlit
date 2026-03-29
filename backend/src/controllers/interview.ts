@@ -44,7 +44,7 @@ export function submitAnswer(req: Request, res: Response): void {
 }
 
 export async function generateInterview(req: Request, res: Response): Promise<void> {
-    const { segments } = req.body
+    const { segments } = req.body;
 
     if (!Array.isArray(segments) || !segments.length) {
         res.status(400).json({ status: 'error', message: 'segments must be a non-empty array' })
