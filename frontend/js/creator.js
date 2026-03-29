@@ -63,7 +63,7 @@ QUESTIONS.forEach((q, i) => {
             <span class="q-text">${q}</span>
         </div>
         <div class="q-block__body">
-            <textarea id="q${i}"></textarea>
+            <textarea id="q${i}" spellcheck="true"></textarea>
         </div>
     `;
   container.appendChild(block);
@@ -73,24 +73,12 @@ QUESTIONS.forEach((q, i) => {
     if (isOpen && !editors[i]) {
       const mde = new EasyMDE({
         element: document.getElementById(`q${i}`),
-        spellChecker: false,
+        spellChecker: true,
         status: false,
         autofocus: true,
         placeholder: "Write your answer here…",
         minHeight: "200px",
         initialValue: answers[i] || "",
-        toolbar: [
-          "bold",
-          "italic",
-          "|",
-          "unordered-list",
-          "ordered-list",
-          "|",
-          "link",
-          "|",
-          "preview",
-        ],
-        hideIcons: ["fullscreen", "guide", "side-by-side"],
       });
 
       mde.codemirror.on("change", () => {
