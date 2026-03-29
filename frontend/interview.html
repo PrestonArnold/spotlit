@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" x-data="interview()">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview - Spotlit</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/interview.css">
+</head>
+<body>
+
+    <header>
+        <h1>Spotlit</h1>
+        <p>Listen to each question, then record your answer.</p>
+
+        <div class="header-actions">
+            <button @click="restart()">Start over</button>
+            <a href="index.html" class="home-link">Home</a>
+        </div>
+    </header>
+
+    <main>
+
+        <div class="prog">
+            <div class="prog__fill" :style="`width:${progress}%`"></div>
+        </div>
+        <p class="prog-label" x-text="progressLabel"></p>
+
+        <!-- QUESTION SCREEN -->
+        <template x-if="screen === 'question'">
+            <div>
+                <div class="card">
+                    <h2 x-text="`Q${q.id}: ${q.text}`"></h2>
+
+                    <div class="section">
+                        <p class="section-label">Question</p>
+                        <audio :src="`${API}/questions/q${q.id}.mp3`" controls></audio>
+                    </div>
+
+                    <div class="section">
+                        <p class="section-label">Your answer</p>
+
+                        <template x-if="rec">
+                            <div>
+                                <div class="ok-badge">
+                                    Recorded (<span x-text="fmt(rec.duration)"></span>)
+                                </div>
+                                <audio :src="rec.url" controls></audio>
+                                <div class="btn-row">
+                                    <button class="btn btn-ghost" @click="deleteRec()">Re-record</button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!rec">
+                            <div class="btn-row">
+                                <button class="btn btn-primary" @click="startRec()" :disabled="recording">Record</button>
+                                <button class="btn" @click="stopRec()" :disabled="!recording">Stop</button>
+                                <template x-if="recording">
+                                    <span class="rec-ind">
+                                        <span class="rec-dot"></span> REC <span x-text="fmt(recSecs)"></span>
+                                    </span>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <nav>
+                    <button class="btn" @click="guardNav(() => prev())" :disabled="current === 0">Previous</button>
+                    <button class="btn btn-primary" @click="guardNav(() => advance())" :disabled="!rec" x-text="isLast ? 'Finish' : 'Next'"></button>
+                </nav>
+            </div>
+        </template>
+
+        <!-- FINISH SCREEN -->
+        <template x-if="screen === 'finish'">
+            <div>
+                <div class="finish-hero">
+                    <h2>All done.</h2>
+                    <p>Merge all your answers into a single MP3.</p>
+                    <div class="btn-row">
+                        <button class="btn btn-primary" @click="generate()" :disabled="generating" x-text="generating ? 'Generating…' : 'Generate interview'"></button>
+                    </div>
+                    <p class="status-msg" x-text="generateStatus"></p>
+                    <template x-if="generatedUrl">
+                        <div class="generated-output">
+                            <audio :src="generatedUrl" controls></audio>
+                            <a class="dl-link" :href="generatedUrl" download="spotlight-interview.mp3">Download MP3</a>
+                        </div>
+                    </template>
+                </div>
+
+                <details class="recordings-drawer">
+                    <summary>Review recordings</summary>
+                    <div class="recordings-list">
+                        <template x-for="(q, i) in questions" :key="i">
+                            <div class="finish-q">
+                                <p class="section-label" x-text="`Q${q.id}: ${q.text}`"></p>
+                                <template x-if="recMap[i]">
+                                    <audio :src="recMap[i].url" controls></audio>
+                                </template>
+                                <template x-if="!recMap[i]">
+                                    <p class="missing">No recording</p>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </details>
+
+                <nav>
+                    <button class="btn" @click="restart()">Start over</button>
+                </nav>
+            </div>
+        </template>
+
+    </main>
+
+    <!-- Guard modal -->
+    <div class="overlay" x-cloak x-show="guardModal">
+        <div class="modal">
+            <h3>You're still recording.</h3>
+            <p>Stop or discard the recording before navigating away.</p>
+            <div class="btn-row">
+                <button class="btn" @click="guardModal=false; pendingNav=null">Keep recording</button>
+                <button class="btn btn-danger" @click="discardAndNav()">Discard &amp; leave</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/interview.js"></script>
+</body>
+</html>

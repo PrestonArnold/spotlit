@@ -43,6 +43,33 @@ header p {
   font-size: 0.9rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.header-actions button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  background: var(--acc);
+  border-color: var(--acc);
+  color: var(--bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 80ms;
+}
+.header-actions button:hover {
+  background: var(--acc);
+  opacity: 0.85;
+}
+
 main {
   width: min(680px, 100% - 2rem);
   margin-inline: auto;

@@ -1,6 +1,8 @@
 import { app } from './server.js';
-
 import interviewRouter from './routes/interview.js';
+import { initRecordingsDir } from './controllers/interview.js';
+
+initRecordingsDir()
 
 app.use('/interview', interviewRouter)
 
