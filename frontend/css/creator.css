@@ -1,0 +1,255 @@
+.meta-card {
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  padding: 1.5rem;
+  background: var(--bgc);
+  margin-bottom: 2rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+}
+
+.field input {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color 80ms;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--acc);
+}
+
+.optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.7rem;
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.q-block {
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  background: var(--bgc);
+  overflow: hidden;
+  transition: border-color 80ms;
+}
+.q-block.is-open {
+  border-color: var(--acc);
+}
+
+.q-block__header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+.q-block__header:hover {
+  background: var(--bg);
+}
+
+.q-num {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acc);
+  background: color-mix(in oklch, var(--acc) 12%, transparent);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.q-block__body {
+  border-top: 1px solid var(--bdr);
+  display: none;
+}
+.q-block.is-open .q-block__body {
+  display: block;
+}
+
+/* EasyMDE overrides */
+.EasyMDEContainer .CodeMirror {
+  border: none;
+  border-radius: 0;
+  background: var(--bgc);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  height: auto;
+  transition: background 80ms;
+}
+.EasyMDEContainer .CodeMirror.CodeMirror-focused {
+  background: var(--bg);
+}
+.EasyMDEContainer .CodeMirror-scroll {
+  min-height: 200px;
+}
+
+.EasyMDEContainer .CodeMirror-cursor {
+  border-left: 2px solid var(--acc);
+}
+
+.EasyMDEContainer .editor-toolbar {
+  border: none;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--bg);
+  padding: 0.3rem 0.75rem;
+  opacity: 1;
+}
+.EasyMDEContainer .editor-toolbar button {
+  color: var(--dim);
+  border-radius: var(--br);
+}
+.EasyMDEContainer .editor-toolbar button:hover,
+.EasyMDEContainer .editor-toolbar button.active {
+  background: var(--bdr);
+  color: var(--fg);
+  border-color: transparent;
+}
+.EasyMDEContainer .editor-toolbar i.separator {
+  border-color: var(--bdr);
+}
+
+.EasyMDEContainer .editor-preview,
+.EasyMDEContainer .editor-preview-side {
+  background: var(--bgc);
+  color: var(--fg);
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.EasyMDEContainer .editor-preview-side {
+  border-left: 1px solid var(--bdr);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actions button {
+  padding: 0.45rem 1rem;
+  background: var(--acc);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--br);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 80ms;
+}
+.actions button:hover {
+  opacity: 0.85;
+}
+
+/* Modal */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklch, var(--bg) 60%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.is-open {
+  display: flex;
+}
+
+.modal {
+  background: var(--bgc);
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  padding: 1.75rem;
+  width: min(400px, 100% - 2rem);
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+}
+.modal-body {
+  font-size: 0.875rem;
+  color: var(--dim);
+  margin-bottom: 1.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--bdr);
+  border-radius: var(--br);
+  background: var(--bgc);
+  color: var(--fg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 80ms;
+}
+.modal-actions button:hover {
+  background: var(--bg);
+}
+
+.modal-actions .btn-primary {
+  padding: 0.4rem 0.75rem;
+  background: var(--acc);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--br);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  transition: opacity 80ms;
+}
+.modal-actions .btn-primary:hover {
+  opacity: 0.85;
+}
