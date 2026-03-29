@@ -1,16 +1,41 @@
 import { Request, Response } from 'express'
-import { existsSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from 'fs'
+import { existsSync, writeFileSync, mkdirSync, readdirSync, unlinkSync, rmSync } from 'fs'
 import { basename, join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { mergeAudio } from '../services/ffmpegService.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-export function submitAnswer(req: Request, res: Response): void {
-    const { questionId, audioBase64, mimeType } = req.body
+export function cleanupAllSessions(): void {
+    const recDir = join(__dirname, '../user-recordings')
+    mkdirSync(recDir, { recursive: true })
+    for (const entry of readdirSync(recDir)) {
+        if (entry === '.gitkeep') continue
+        try {
+            rmSync(join(recDir, entry), { recursive: true, force: true })
+        } catch (err) {
+            console.error(`Failed to remove leftover session ${entry}:`, err)
+        }
+    }
+}
 
-    if (!questionId || !audioBase64) {
-        res.status(400).json({ status: 'error', message: 'questionId and audioBase64 are required' })
+function sessionDir(sessionId: string): string {
+    return join(__dirname, '../user-recordings', sessionId)
+}
+
+function cleanupSession(sessionId: string): void {
+    try {
+        rmSync(sessionDir(sessionId), { recursive: true, force: true })
+    } catch (err) {
+        console.error(`Failed to clean up session ${sessionId}:`, err)
+    }
+}
+
+export function submitAnswer(req: Request, res: Response): void {
+    const { sessionId, questionId, audioBase64, mimeType } = req.body
+
+    if (!sessionId || !questionId || !audioBase64) {
+        res.status(400).json({ status: 'error', message: 'sessionId, questionId, and audioBase64 are required' })
         return
     }
 
@@ -19,7 +44,7 @@ export function submitAnswer(req: Request, res: Response): void {
         : 'webm'
 
     try {
-        const dir = join(__dirname, '../user-recordings')
+        const dir = sessionDir(sessionId)
         mkdirSync(dir, { recursive: true })
         writeFileSync(join(dir, `${questionId}.${ext}`), Buffer.from(audioBase64, 'base64'))
         res.json({ status: 'ok' })
@@ -30,17 +55,17 @@ export function submitAnswer(req: Request, res: Response): void {
 }
 
 export async function generateInterview(req: Request, res: Response): Promise<void> {
-    const { segments } = req.body
+    const { sessionId, segments } = req.body
 
-    if (!Array.isArray(segments) || !segments.length) {
-        res.status(400).json({ status: 'error', message: 'segments must be a non-empty array' })
+    if (!sessionId || !Array.isArray(segments) || !segments.length) {
+        res.status(400).json({ status: 'error', message: 'sessionId and non-empty segments are required' })
         return
     }
 
     const exts = ['webm', 'mp4', 'ogg']
     const files = segments.map((id: string) => {
         for (const ext of exts) {
-            const p = join(__dirname, '../user-recordings', `${id}.${ext}`)
+            const p = join(sessionDir(sessionId), `${id}.${ext}`)
             if (existsSync(p)) return p
         }
         return join(__dirname, '../questions', `${id}.mp3`)
@@ -53,12 +78,23 @@ export async function generateInterview(req: Request, res: Response): Promise<vo
         const output = join(outDir, `final-${Date.now()}.mp3`)
         await mergeAudio(files, output)
 
-        const recDir = join(__dirname, '../user-recordings')
-        for (const f of readdirSync(recDir)) unlinkSync(join(recDir, f))
+        cleanupSession(sessionId)
 
         res.json({ status: 'ok', url: `/interviews/${basename(output)}` })
     } catch (err) {
         console.error(err)
+        cleanupSession(sessionId)
         res.status(500).json({ status: 'error', message: 'Failed to generate interview' })
     }
+}
+
+// called by frontend on page unload via beacon
+export function cleanupSession_route(req: Request, res: Response): void {
+    const { sessionId } = req.body
+    if (!sessionId) {
+        res.status(400).json({ status: 'error', message: 'sessionId is required' })
+        return
+    }
+    cleanupSession(sessionId)
+    res.json({ status: 'ok' })
 }

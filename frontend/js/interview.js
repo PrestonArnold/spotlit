@@ -1,7 +1,13 @@
-// Change this to your deployed API URL in production
 const API = 'http://localhost:3002'
 
 function interview() {
+    const sessionId = crypto.randomUUID()
+
+    const _handleUnload = () => {
+        navigator.sendBeacon(`${API}/interview/cleanup`, JSON.stringify({ sessionId }))
+    }
+    window.addEventListener('beforeunload', _handleUnload)
+
     return {
         questions: [
             { id: 1, text: 'Who are you and what do you do?' },
@@ -13,6 +19,7 @@ function interview() {
             { id: 7, text: 'Share something worth checking out — shameless plugs welcomed!' },
         ],
 
+        _sessionId: sessionId,
         screen: 'question',
         current: 0,
         recMap: {},
@@ -86,7 +93,7 @@ function interview() {
             await fetch(`${API}/interview/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ questionId: `a${index + 1}`, audioBase64: base64, mimeType: rec.mimeType })
+                body: JSON.stringify({ sessionId: this._sessionId, questionId: `a${index + 1}`, audioBase64: base64, mimeType: rec.mimeType })
             }).catch(e => console.error('submit failed:', e))
         },
 
@@ -104,7 +111,7 @@ function interview() {
                 const res = await fetch(`${API}/interview/generate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ segments })
+                    body: JSON.stringify({ sessionId: this._sessionId, segments })
                 })
                 const data = await res.json()
                 this.generatedUrl = res.ok ? `${API}${data.url}` : null
@@ -135,6 +142,15 @@ function interview() {
         prev() { this.current-- },
 
         restart() {
+            navigator.sendBeacon(`${API}/interview/cleanup`, JSON.stringify({ sessionId: this._sessionId }))
+            const newId = crypto.randomUUID()
+            this._sessionId = newId
+            window.removeEventListener('beforeunload', _handleUnload)
+            const _newHandleUnload = () => {
+                navigator.sendBeacon(`${API}/interview/cleanup`, JSON.stringify({ sessionId: newId }))
+            }
+            window.addEventListener('beforeunload', _newHandleUnload)
+
             Object.values(this.recMap).forEach(r => URL.revokeObjectURL(r?.url))
             this.recMap = {}
             this.current = 0
