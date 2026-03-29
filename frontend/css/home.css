@@ -1,0 +1,29 @@
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.card {
+    padding: 1.5rem;
+    background: var(--bgc);
+    border: 1px solid var(--bdr);
+    border-radius: var(--br);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+}
+
+.card:hover {
+    border-color: var(--acc);
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.card p {
+    font-size: 0.85rem;
+    color: var(--dim);
+}
