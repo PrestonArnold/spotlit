@@ -10,5 +10,5 @@ export const app: Express = express()
 app.use(cors())
 app.use(express.json({ limit: '50mb' }))
 
-app.use('/questions', express.static(join(__dirname, 'questions')))
-app.use('/interviews', express.static(join(__dirname, 'interviews')))
+app.use('/questions', express.static("/var/www/apis/src/questions/"))
+app.use('/interview', express.static("/var/www/apis/src/interviews/"))

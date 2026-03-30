@@ -9,8 +9,20 @@ export function mergeAudio(files: string[], output: string): Promise<void> {
         args.push('-err_detect', 'ignore_err')
         files.forEach(f => args.push('-i', f))
 
-        const inputs = files.map((_, i) => `[${i}:a]`).join('')
-        args.push('-filter_complex', `${inputs}concat=n=${files.length}:v=0:a=1[out]`, '-map', '[out]', output)
+        // Normalise every stream to the same format before concat.
+        // This handles mixing mp3 question files with webm/ogg/mp4 user recordings
+        // which can have different sample rates, channel counts, and codecs.
+        const normParts = files
+            .map((_, i) => `[${i}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[a${i}]`)
+            .join(';')
+        const concatInputs = files.map((_, i) => `[a${i}]`).join('')
+
+        args.push(
+            '-filter_complex', `${normParts};${concatInputs}concat=n=${files.length}:v=0:a=1[out]`,
+            '-map', '[out]',
+            '-q:a', '2',
+            output
+        )
 
         const ffmpeg = spawn('ffmpeg', args)
         ffmpeg.stderr.on('data', d => process.stderr.write(d))

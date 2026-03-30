@@ -5,7 +5,22 @@ import { fileURLToPath } from 'url'
 import { mergeAudio } from '../services/ffmpegService.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const REC_DIR = join(__dirname, '../user-recordings')
+
+// Walk up from dist/controllers or src/controllers to find the actual project root
+// so paths work correctly in both `pnpm dev` (tsx, runs src/) and `pnpm start` (node, runs dist/)
+function findProjectRoot(start: string): string {
+    let dir = start
+    while (true) {
+        const parent = join(dir, '..')
+        if (parent === dir) return start // filesystem root, give up
+        if (existsSync(join(parent, 'package.json'))) return parent
+        dir = parent
+    }
+}
+
+const PROJECT_ROOT = findProjectRoot(__dirname)
+const REC_DIR = join(PROJECT_ROOT, 'src', 'user-recordings')
+const QUESTIONS_DIR = process.env.QUESTIONS_DIR ?? join(PROJECT_ROOT, 'dist', 'questions')
 
 function clearRecordings(): void {
     for (const f of readdirSync(REC_DIR)) {
@@ -52,24 +67,30 @@ export async function generateInterview(req: Request, res: Response): Promise<vo
     }
 
     const exts = ['webm', 'mp4', 'ogg']
-    const files = segments.map((id: string) => {
+    const files = segments.flatMap((id: string) => {
         for (const ext of exts) {
             const p = join(REC_DIR, `${id}.${ext}`)
-            if (existsSync(p)) return p
+            if (existsSync(p)) return [p]
         }
-        return join(__dirname, '../questions', `${id}.mp3`)
+        const q = join(QUESTIONS_DIR, `${id}.mp3`)
+        if (existsSync(q)) return [q]
+        // answer recording not found — skip it silently
+        return []
     })
 
     try {
-        const outDir = join(__dirname, '../interviews')
+        const outDir = join(PROJECT_ROOT, 'src', 'interviews')
         mkdirSync(outDir, { recursive: true })
-        const output = join(outDir, `final-${Date.now()}.mp3`)
+        const existing = existsSync(outDir) ? readdirSync(outDir).filter(f => /^\d+\.mp3$/.test(f)) : []
+        const nextId = existing.length > 0 ? Math.max(...existing.map(f => parseInt(f))) + 1 : 1
+        const output = join(outDir, `${nextId}.mp3`)
         await mergeAudio(files, output)
         clearRecordings()
-        res.json({ status: 'ok', url: `/interviews/${basename(output)}` })
+        res.json({ status: 'ok', url: `/interview/${basename(output)}` })
     } catch (err) {
-        console.error(err)
+        const message = err instanceof Error ? err.message : String(err)
+        console.error('[generate]', message)
         clearRecordings()
-        res.status(500).json({ status: 'error', message: 'Failed to generate interview' })
+        res.status(500).json({ status: 'error', message: 'Failed to generate interview', detail: message })
     }
 }
