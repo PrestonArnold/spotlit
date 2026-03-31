@@ -6,13 +6,11 @@ import { mergeAudio } from '../services/ffmpegService.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-// Walk up from dist/controllers or src/controllers to find the actual project root
-// so paths work correctly in both `pnpm dev` (tsx, runs src/) and `pnpm start` (node, runs dist/)
 function findProjectRoot(start: string): string {
     let dir = start
     while (true) {
         const parent = join(dir, '..')
-        if (parent === dir) return start // filesystem root, give up
+        if (parent === dir) return start
         if (existsSync(join(parent, 'package.json'))) return parent
         dir = parent
     }
@@ -74,7 +72,6 @@ export async function generateInterview(req: Request, res: Response): Promise<vo
         }
         const q = join(QUESTIONS_DIR, `${id}.mp3`)
         if (existsSync(q)) return [q]
-        // answer recording not found — skip it silently
         return []
     })
 
