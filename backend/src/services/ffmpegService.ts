@@ -9,9 +9,6 @@ export function mergeAudio(files: string[], output: string): Promise<void> {
         args.push('-err_detect', 'ignore_err')
         files.forEach(f => args.push('-i', f))
 
-        // Normalise every stream to the same format before concat.
-        // This handles mixing mp3 question files with webm/ogg/mp4 user recordings
-        // which can have different sample rates, channel counts, and codecs.
         const normParts = files
             .map((_, i) => `[${i}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[a${i}]`)
             .join(';')
